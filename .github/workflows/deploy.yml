@@ -22,15 +22,28 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # Retrieves the OpenAI API key stored in GitHub Secrets and sets it as an environment variable
+      - name: Set OpenAI API Key
+        run: |
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
 
-      # Runs a set of commands using the runners shell
+      # Run a script to confirm the key is set (avoid printing sensitive data in real-world scenarios)
+      - name: Confirm OpenAI API Key is set
+        run: echo "OpenAI API Key is set successfully"
+
+      # Runs a set of commands using the runner's shell
       - name: Run a multi-line script
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+
+      # Example: Use OpenAI API Key in a curl request
+      - name: Example API Call using OpenAI Key
+        run: |
+          curl -X POST "https://api.openai.com/v1/completions" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $OPENAI_API_KEY" \
+          -d '{"model": "text-davinci-003", "prompt": "Hello, OpenAI!", "max_tokens": 5}'
